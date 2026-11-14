@@ -1,4 +1,9 @@
 {
   "name": "GymAppMobile",
-  "displayName": "GymAppMobile"
+  "displayName": "GymAppMobile",
+  "extra": {
+    "eas": {
+      "projectId": "9af9b2a9-459b-485f-9673-6af3e55b40c8"
+    }
+  }
 }
