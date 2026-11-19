@@ -15,18 +15,16 @@ import {RootStackParamList} from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UserLogin'>;
 
-
 function UserLoginScreen({navigation}: Props) {
   const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !mobile.trim() || !password.trim()) {
+    if (!email.trim() || !password.trim()) {
       Alert.alert(
         'Missing Details',
-        'Please enter your email, mobile number and password.',
+        'Please enter your email and password.',
       );
       return;
     }
@@ -34,10 +32,8 @@ function UserLoginScreen({navigation}: Props) {
     try {
       setLoading(true);
 
-
-      // TODO : Change the API accordingly.....
       const response = await fetch(
-        '',
+        'http://10.32.232.25:3000/api/user/login',
         {
           method: 'POST',
           headers: {
@@ -45,44 +41,49 @@ function UserLoginScreen({navigation}: Props) {
           },
           body: JSON.stringify({
             email: email.trim(),
-            mobile: mobile.trim(),
             password,
           }),
         },
       );
 
-      const data = await response.json();
+      const responseText = await response.text();
 
-      if (!response.ok) {
-        Alert.alert('Login Failed', data.message || 'Unable to login.');
-        return;
+      let data: any = {};
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        data = {message: responseText};
       }
 
-      const user = data.user;
-
-      if (!user || !user._id || !user.status) {
+      if (!response.ok) {
         Alert.alert(
-          'Error',
-          'User information or account status was not received.',
+          'Login Failed',
+          data.message || 'Unable to login.',
         );
         return;
       }
 
-      const accountStatus = user.status;
+      const accessToken = data.data?.accessToken;
 
-      if (accountStatus === 'active') {
-        navigation.replace('UserDashboard');
-      } else if (
-        accountStatus === 'pending' ||
-        accountStatus === 'inactive'
-      ) {
-        navigation.replace('ApprovalScreen', {
-          status: accountStatus,
-          userId: user._id,
-        });
-      } else {
-        Alert.alert('Error', 'Unknown account status received.');
+      if (!accessToken) {
+        Alert.alert(
+          'Login Error',
+          'The server did not return an access token.',
+        );
+        return;
       }
+
+      Alert.alert(
+        'Login Successful',
+        data.message || 'Welcome back to Fitness Club!',
+        [
+          {
+            text: 'Continue',
+            onPress: () => navigation.replace('UserDashboard'),
+          },
+        ],
+      );
     } catch (error) {
       Alert.alert(
         'Connection Error',
@@ -119,15 +120,6 @@ function UserLoginScreen({navigation}: Props) {
 
       <TextInput
         style={styles.input}
-        placeholder="Mobile Number"
-        placeholderTextColor="#A6B09F"
-        keyboardType="phone-pad"
-        value={mobile}
-        onChangeText={setMobile}
-      />
-
-      <TextInput
-        style={styles.input}
         placeholder="Password"
         placeholderTextColor="#A6B09F"
         secureTextEntry
@@ -159,7 +151,6 @@ function UserLoginScreen({navigation}: Props) {
           <Text style={styles.registerText}>Register Here</Text>
         </TouchableOpacity>
       </View>
-
     </View>
   );
 }

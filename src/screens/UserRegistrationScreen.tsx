@@ -41,11 +41,13 @@ function UserRegistrationScreen({navigation}: Props) {
       return;
     }
 
+    // Validate email
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
+    // Validate mobile number
     if (!/^\d{10}$/.test(mobile.trim())) {
       Alert.alert(
         'Invalid Mobile Number',
@@ -54,6 +56,7 @@ function UserRegistrationScreen({navigation}: Props) {
       return;
     }
 
+    // Validate password
     if (password.length < 6) {
       Alert.alert(
         'Weak Password',
@@ -65,9 +68,8 @@ function UserRegistrationScreen({navigation}: Props) {
     try {
       setLoading(true);
 
-      //TODO: Integrate the actual registration API.
       const response = await fetch(
-        '',
+        'http://10.32.232.25:3000/api/user/register',
         {
           method: 'POST',
           headers: {
@@ -77,13 +79,21 @@ function UserRegistrationScreen({navigation}: Props) {
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.trim(),
-            mobile: mobile.trim(),
+            mobileNo: mobile.trim(),
             password,
           }),
         },
       );
 
-      const data = await response.json();
+      const responseText = await response.text();
+
+      let data: any = {};
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        data = {message: responseText};
+      }
 
       if (!response.ok) {
         Alert.alert(
@@ -93,22 +103,20 @@ function UserRegistrationScreen({navigation}: Props) {
         return;
       }
 
-      if (!data.user || !data.user._id || data.user.status !== 'pending') {
-        Alert.alert(
-          'Registration Error',
-          'The server did not return the expected pending account details.',
-        );
-        return;
-      }
-
-      navigation.replace('ApprovalScreen', {
-        status: data.user.status,
-        userId: data.user._id,
-      });
+      Alert.alert(
+        'Registration Successful',
+        data.message || 'Your account has been created successfully.',
+        [
+          {
+            text: 'Go to Login',
+            onPress: () => navigation.replace('UserLogin'),
+          },
+        ],
+      );
     } catch (error) {
       Alert.alert(
         'Connection Error',
-        'Could not connect to the server. Please try again.',
+        'Could not connect to the server. Please check your internet connection and try again.',
       );
     } finally {
       setLoading(false);

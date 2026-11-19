@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   View,
@@ -9,10 +10,10 @@ import {
   useWindowDimensions,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-const WelcomeScreen = ({ navigation }: any) => {
-  const { width, height } = useWindowDimensions();
+const WelcomeScreen = ({navigation}: any) => {
+  const {width, height} = useWindowDimensions();
 
   // Adjust text sizes according to the screen size
   const titleSize = Math.min(Math.max(width * 0.075, 25), 36);
@@ -27,8 +28,7 @@ const WelcomeScreen = ({ navigation }: any) => {
       <ImageBackground
         source={require('../assets/Gym background.jpg')}
         style={styles.background}
-        resizeMode="cover"
-      >
+        resizeMode="cover">
         <View style={styles.overlay} />
 
         <SafeAreaView style={styles.safeArea}>
@@ -54,30 +54,39 @@ const WelcomeScreen = ({ navigation }: any) => {
                   fontSize: titleSize,
                   lineHeight: titleSize * 1.3,
                 },
-              ]}
-            >
+              ]}>
               Welcome to{' '}
               <Text style={styles.brandName}>Fitness Club!</Text>
             </Text>
 
-            <Text
-              style={[styles.quote, { fontSize: quoteSize }]}
-            >
+            <Text style={[styles.quote, {fontSize: quoteSize}]}>
               Eat, Sleep, Train, Repeat
             </Text>
 
             <View style={styles.spacer} />
 
+            {/* Normal user login flow */}
             <Pressable
-              style={({ pressed }) => [
+              style={({pressed}) => [
                 styles.button,
                 pressed && styles.buttonPressed,
               ]}
               onPress={() => navigation.navigate('UserLogin')}
               accessibilityRole="button"
-              accessibilityLabel="Get Started"
-            >
+              accessibilityLabel="Get Started">
               <Text style={styles.buttonText}>Get Started</Text>
+            </Pressable>
+
+            {/* Temporary dashboard testing button */}
+            <Pressable
+              style={({pressed}) => [
+                styles.testButton,
+                pressed && styles.testButtonPressed,
+              ]}
+              onPress={() => navigation.navigate('UserDashboard')}
+              accessibilityRole="button"
+              accessibilityLabel="Test Dashboard">
+              <Text style={styles.testButtonText}>Test Dashboard</Text>
             </Pressable>
 
             <Text style={styles.footer}>
@@ -163,13 +172,37 @@ const styles = StyleSheet.create({
 
   buttonPressed: {
     opacity: 0.8,
-    transform: [{ scale: 0.98 }],
+    transform: [{scale: 0.98}],
   },
 
   buttonText: {
     color: '#111813',
     fontSize: 17,
     fontWeight: '800',
+  },
+
+  testButton: {
+    width: '100%',
+    maxWidth: 420,
+    minHeight: 48,
+    borderWidth: 1,
+    borderColor: '#B7F34B',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginTop: 12,
+  },
+
+  testButtonPressed: {
+    opacity: 0.7,
+  },
+
+  testButtonText: {
+    color: '#B7F34B',
+    fontSize: 15,
+    fontWeight: '700',
   },
 
   footer: {
