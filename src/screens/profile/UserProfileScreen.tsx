@@ -52,11 +52,6 @@ const UserProfileScreen = ({navigation}: Props) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   const loadProfile = async () => {
     try {
@@ -107,46 +102,6 @@ const UserProfileScreen = ({navigation}: Props) => {
       Alert.alert('Success', 'Your profile has been updated.');
     } catch (error) {
       Alert.alert('Update Failed', 'Unable to update your profile.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert('Missing Information', 'Please fill in all password fields.');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      Alert.alert('Invalid Password', 'New password must contain at least 6 characters.');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert('Password Mismatch', 'New password and confirm password do not match.');
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      await changeUserPassword({
-        currentPassword,
-        newPassword,
-      });
-
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setChangingPassword(false);
-
-      Alert.alert('Success', 'Your password has been changed.');
-    } catch (error) {
-      Alert.alert(
-        'Password Change Failed',
-        'Unable to change your password. Please check your current password.',
-      );
     } finally {
       setSaving(false);
     }
@@ -279,67 +234,6 @@ const UserProfileScreen = ({navigation}: Props) => {
                 {saving ? 'Saving...' : 'Save Changes'}
               </Text>
             </Pressable>
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security</Text>
-
-          {!changingPassword ? (
-            <Pressable
-              style={styles.secondaryButton}
-              onPress={() => setChangingPassword(true)}>
-              <Text style={styles.secondaryButtonText}>Change Password</Text>
-            </Pressable>
-          ) : (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Current Password"
-                placeholderTextColor={COLORS.muted}
-                secureTextEntry
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                placeholderTextColor={COLORS.muted}
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                placeholderTextColor={COLORS.muted}
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-
-              <Pressable
-                style={styles.primaryButton}
-                onPress={handleChangePassword}
-                disabled={saving}>
-                <Text style={styles.primaryButtonText}>
-                  {saving ? 'Updating...' : 'Update Password'}
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={styles.cancelButton}
-                onPress={() => {
-                  setChangingPassword(false);
-                  setCurrentPassword('');
-                  setNewPassword('');
-                  setConfirmPassword('');
-                }}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
-            </>
           )}
         </View>
 
